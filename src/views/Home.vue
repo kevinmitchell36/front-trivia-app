@@ -1,15 +1,16 @@
 <template>
   <div class="home">
     <p>{{randQuestion.question}}</p>
-    <form>
-      <div v-for="option in options" :key="option">
-        <input type="radio" name="answer" id="first" :value="option" v-model="choice">
-        <label for="first">{{option}}</label>
+    <form @submit.prevent="checkAnswer()">
+      <div v-for="(option, index) in options" :key="index">
+          <input type="radio" name="answer" id="first" :value="option" v-model="choice" required>
+          <label for="first">{{option}} {{index}}</label>
+      </div>
+      <div v-if="nextQuestion == false">
+        <button type="Submit">Check Answer</button>
       </div>
     </form>
-      <div v-if="nextQuestion == false">
-        <button @click="checkAnswer()">Check Answer</button>
-      </div>
+    <!-- Too many v-if directives? Todo - research potential pitfalls -->
       <div>
         <h1>{{feedback}}</h1>
       </div>
@@ -17,7 +18,7 @@
         <button @click="getSingleQuestion()">Next</button>
       </div>
       <div v-if="numberLeft < 10">
-        <p>You got {{correct}} out of 10 correct so far!!!</p>
+        <p>You got {{numberCorrect}} out of 10 correct so far!!!</p>
       </div>
   </div>
 </template>
@@ -34,7 +35,8 @@ export default {
       feedback: null,
       nextQuestion: false,
       numberLeft: 10,
-      correct: 0
+      numberCorrect: 0,
+      correctAnswer: ""
     }
   },
   methods: {
@@ -45,6 +47,7 @@ export default {
         this.questions = response.data
       }).then((this.getSingleQuestion))
     },
+    // This method is to long. Todo - break into smaller methods
     getSingleQuestion: function () {
       this.feedback = null
       this.nextQuestion = false
@@ -58,6 +61,7 @@ export default {
       this.randQuestion.incorrect.forEach(wrong => {
         this.options.push(wrong)
       })
+      this.correctAnswer = this.options[0]
       this.shuffleOptions()
     },
     shuffleOptions: function () {
@@ -68,10 +72,11 @@ export default {
         this.options[j] = temp
       }
     },
+    // Hard code of 9 (line 79). Todo - pull from db or user?
     checkAnswer: function () {
       if(this.choice === this.randQuestion.correct) {
         this.feedback = `That's right! ${this.randQuestion.correct} is the right answer!`
-        this.correct += 1
+        this.numberCorrect += 1
       } else {
         this.feedback = `So close! The correct answer is ${this.randQuestion.correct}.`
       }
