@@ -7,13 +7,17 @@
         <label for="first">{{option}}</label>
       </div>
     </form>
-      <button @click="checkAnswer()">Check Answer</button>
-      <div v-if="nextQuestion === true">
-        <p>{{feedback}}</p>
-        <button @click="getSingleQuestion()">Next</button>
+      <div v-if="nextQuestion == false">
+        <button @click="checkAnswer()">Check Answer</button>
       </div>
       <div>
-        {{numberLeft}}
+        <h1>{{feedback}}</h1>
+      </div>
+      <div v-if="nextQuestion === true && numberLeft > 0">
+        <button @click="getSingleQuestion()">Next</button>
+      </div>
+      <div v-if="numberLeft < 10">
+        <p>You got {{correct}} out of 10 correct so far!!!</p>
       </div>
   </div>
 </template>
@@ -29,7 +33,8 @@ export default {
       options: [],
       feedback: null,
       nextQuestion: false,
-      numberLeft: 3
+      numberLeft: 10,
+      correct: 0
     }
   },
   methods: {
@@ -41,6 +46,7 @@ export default {
       }).then((this.getSingleQuestion))
     },
     getSingleQuestion: function () {
+      this.feedback = null
       this.nextQuestion = false
       let selectedIndex =  Math.floor(Math.random() * this.questions.length)
       this.randQuestion = this.questions[selectedIndex]
@@ -64,11 +70,12 @@ export default {
     },
     checkAnswer: function () {
       if(this.choice === this.randQuestion.correct) {
-        this.feedback = "That's right!"
+        this.feedback = `That's right! ${this.randQuestion.correct} is the right answer!`
+        this.correct += 1
       } else {
-        this.feedback = "That's wrong..."
+        this.feedback = `So close! The correct answer is ${this.randQuestion.correct}.`
       }
-      if(this.questions.length > 17) {
+      if(this.questions.length > this.questions.length - 9) {
         this.nextQuestion = true
       }
       this.numberLeft -= 1
