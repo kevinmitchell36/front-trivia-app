@@ -1,22 +1,25 @@
 <template>
   <div class="home">
-    <p>{{randQuestion.question}}</p>
-    <form @submit.prevent="checkAnswer()">
-      <div v-for="(option, index) in options" :key="index">
-          <input type="radio" name="answer" id="first" :value="option" v-model="choice" required>
-          <label for="first">{{option}} {{index}}</label>
-      </div>
-      <div v-if="nextQuestion == false">
-        <button type="Submit">Check Answer</button>
-      </div>
-    </form>
+    <div v-if="numberLeft > 0">
+      <p>{{randQuestion.question}}</p>
+      <form class="container" @submit.prevent="checkAnswer()">
+        <div v-for="(option, index) in options" :key="index">
+          <div v-for="(value, key, index) in option" 
+            :key="index"
+            @click="checkAnswer(value, key)">
+            <input type="radio" name="answer" id="first" :value="value" v-model="choice" required>
+            <label for="first">{{value}}</label>
+          </div>  
+        </div>
+      </form>
+    </div>
     <!-- Too many v-if directives? Todo - research potential pitfalls -->
       <div>
         <h1>{{feedback}}</h1>
       </div>
-      <div v-if="nextQuestion === true && numberLeft > 0">
+      <!-- <div v-if="nextQuestion === true && numberLeft > 0">
         <button @click="getSingleQuestion()">Next</button>
-      </div>
+      </div> -->
       <div v-if="numberLeft < 10">
         <p>You got {{numberCorrect}} out of 10 correct so far!!!</p>
       </div>
@@ -36,14 +39,13 @@ export default {
       nextQuestion: false,
       numberLeft: 10,
       numberCorrect: 0,
-      correctAnswer: ""
+      // correctAnswer: ""
     }
   },
   methods: {
     getQuestions: function () {
       axios.get("https://damp-atoll-89484.herokuapp.com/api/questions")
       .then((response) => {
-        console.log(response.data.length)
         this.questions = response.data
       }).then((this.getSingleQuestion))
     },
@@ -53,15 +55,12 @@ export default {
       this.nextQuestion = false
       let selectedIndex =  Math.floor(Math.random() * this.questions.length)
       this.randQuestion = this.questions[selectedIndex]
-      console.log(this.randQuestion)
       this.questions.splice(selectedIndex, 1)
-      console.log(this.questions.length)
       this.options = []
-      this.options.push(this.randQuestion.correct)
+      this.options = [ { correct: this.randQuestion.correct} ]
       this.randQuestion.incorrect.forEach(wrong => {
-        this.options.push(wrong)
+        this.options.push({ incorrect: wrong })
       })
-      this.correctAnswer = this.options[0]
       this.shuffleOptions()
     },
     shuffleOptions: function () {
@@ -73,17 +72,19 @@ export default {
       }
     },
     // Hard code of 9 (line 79). Todo - pull from db or user?
-    checkAnswer: function () {
-      if(this.choice === this.randQuestion.correct) {
+    checkAnswer: function (value, key) {
+      if(value === this.randQuestion.correct) {
         this.feedback = `That's right! ${this.randQuestion.correct} is the right answer!`
         this.numberCorrect += 1
       } else {
         this.feedback = `So close! The correct answer is ${this.randQuestion.correct}.`
       }
       if(this.questions.length > this.questions.length - 9) {
+        this.getSingleQuestion()
         this.nextQuestion = true
       }
       this.numberLeft -= 1
+      console.log(numberLeft)
     }
   },
   created() {
