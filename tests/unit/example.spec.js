@@ -3,9 +3,6 @@ import { shallowMount } from '@vue/test-utils'
 // import HelloWorld from '@/components/HelloWorld.vue'
 import Home from '@/views/Home.vue'
 
-const nock = require('nock')
-const response = require('./response')
-const getQuestions = require('@/views/Home.vue').getQuestions
 
 // describe('HelloWorld.vue', () => {
 //   it('renders props.msg when passed', () => {
@@ -20,9 +17,9 @@ const getQuestions = require('@/views/Home.vue').getQuestions
 describe('Home.vue', () => {
   it('should render correctly', () => {})
 
-  it('should contain', () => {
+  it('boolean should be false', () => {
     let wrapper = shallowMount(Home)
-    expect(wrapper.find('.btn-dark').text()).to.contain('Check Answer')
+    expect(wrapper.vm.isAnswered).to.be.false
     expect(wrapper.vm.nextQuestion).to.be.false
   })
 
