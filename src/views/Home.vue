@@ -9,7 +9,7 @@
         <div v-for="(option, index) in options" :key="index">
           <div v-for="(value, key, index) in option" 
             :key="index"
-            @click="checkAnswer(value, key)" >
+            @click="isAnswered == false ? checkAnswer(value, key, $event) : $event.preventDefault()" >
             <!-- Works. But it smells -->
             <p id="answers" v-bind:class="{correct: isAnswered && key === 'correct', incorrect: isAnswered && key === 'incorrect' && userAnswer === value}">{{value}}</p>
           </div>  
@@ -82,7 +82,8 @@ export default {
       }
     },
     // Hard code of 9 (line 79). Todo - pull from db or user?
-    checkAnswer: function (value, key) {
+    checkAnswer: function (value, key, event) {
+      console.log(event)
       this.userAnswer = value
       this.isAnswered = true
       if(value === this.randQuestion.correct) {
