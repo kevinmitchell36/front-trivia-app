@@ -1,32 +1,34 @@
 <template>
   <div class="home">
-    <div class="container" v-if="numberLeft > 0">
-      <p class="tracker">Question {{numberAnswered}} of 10</p>
-      <div class="question-wrapper">
-        <p id="question">{{randQuestion.question}}</p>
-      </div>
-      <div class="wrapper">
-        <div v-for="(option, index) in options" :key="index">
-          <div v-for="(value, key, index) in option" 
-            :key="index"
-            @click="isAnswered == false ? checkAnswer(value, key, $event) : $event.preventDefault()" >
-            <!-- Works. But it smells -->
-            <p id="answers" v-bind:class="{correct: isAnswered && key === 'correct', incorrect: isAnswered && key === 'incorrect' && userAnswer === value}">{{value}}</p>
-          </div>  
+    <div class="card card-color">
+      <div v-if="numberLeft > 0">
+        <p class="tracker">Question {{numberAnswered}} of 10</p>
+        <div class="question-wrapper">
+          <p id="text">{{randQuestion.question}}</p>
+        </div>
+        <div class="wrapper">
+          <div v-for="(option, index) in options" :key="index">
+            <div v-for="(value, key, index) in option" 
+              :key="index"
+              @click="isAnswered == false ? checkAnswer(value, key, $event) : $event.preventDefault()" >
+              <!-- Works. But it smells -->
+              <p id="answers" v-bind:class="{correct: isAnswered && key === 'correct', incorrect: isAnswered && key === 'incorrect' && userAnswer === value}">{{value}}</p>
+            </div>  
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Too many v-if directives? Todo - research potential pitfalls -->
-    <div class="feedback">
-      <div>
-        <p>{{feedback}}</p>
+      <!-- Too many v-if directives? Todo - research potential pitfalls -->
+      <div class="feedback">
+        <div>
+          <p id="text">{{feedback}}</p>
+        </div>
+        <div v-if="nextQuestion === true && numberLeft > 0">
+          <button @click="getSingleQuestion()">Next</button>
+        </div>
       </div>
-      <div v-if="nextQuestion === true && numberLeft > 0">
-        <button @click="getSingleQuestion()">Next</button>
+      <div class="score" v-if="numberLeft < 10">
+        <p>You got {{numberCorrect}} out of 10 correct!!!</p>
       </div>
-    </div>
-    <div class="score" v-if="numberLeft < 10">
-      <p>You got {{numberCorrect}} out of 10 correct!!!</p>
     </div>
   </div>
 </template>
@@ -105,6 +107,31 @@ export default {
 </script>
 
 <style>
+
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: orange;
+  color:#fafafa;
+  width: 75vh;
+  border: 2px solid black;
+}
+
+.tracker {
+  margin-top: 0.5rem;
+}
+
+.question-wrapper {
+  margin: 1.5rem;
+}
+
 .correct {
   border: green 5px solid;
 }
@@ -113,35 +140,24 @@ export default {
   border: red 5px solid;
 }
 
-.question-wrapper {
-  display: flex;
-  justify-content: center;
-  position: relative;
-  margin-bottom: 2rem;
-}
-
-.question-wrapper #question {
+#text {
   font-size: 1.5rem;
 }
 
-.tracker {
-  position: relative;
-  top: 0;
-  left: 40vw;
-  margin-bottom: 1.5rem;
-}
-
 .wrapper {
+  background-color: #fbebd0;
   display: flex;
-  align-content: center;
-  align-items: center;
-  justify-content: space-evenly;
+  flex-direction: column;
 }
 
 #answers {
   padding: 1rem;
-  background: #7a7f80;
-  color: #f4f4f4 
+  background: #b4b5b6;
+  color: #2c2828; 
+  margin: 5px;
+  border-radius: 5px;
+  box-shadow: 0px 3px 15px rgba(0,0,0,0.2);
+  cursor: pointer;
 }
 
 .feedback {
@@ -151,24 +167,25 @@ export default {
   justify-content: center;
   position: relative;
   padding: 15px;
-  margin-top: 1.5rem;
+  margin: 1rem;
 }
 
 .feedback > div {
   margin-right: 20px;
 }
 
-.feedback >  div > p {
-  font-size: 2rem;
-}
-
 button {
   width: 60px;
   height: 30px;
-  background: #333;
-  color: #f4f4f4 
+  background: #b4b5b6;
+  color: #2c2828;
+  box-shadow: 0px 3px 15px rgba(0,0,0,0.2);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-
-
+.score {
+  margin-bottom: 0.5rem;
+}
 </style>
